@@ -1,0 +1,196 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Problema de dinámica (I)</title>
+    <style>
+        canvas {
+            border: 1px solid black;
+        }
+        .controls {
+            margin: 10px 0;
+        }
+        .questions {
+            margin: 20px 0;
+        }
+    </style>
+</head>
+<body>
+    <h1>Problema de dinámica (I)</h1>
+    <p>Autor: Antonio González García</p>
+    <canvas id="canvas" width="800" height="400"></canvas>
+    <div class="controls">
+        <label for="mass1">Masa del objeto sobre la mesa (kg):</label>
+        <input type="range" id="mass1" min="1" max="10" step="0.1" value="5">
+        <span id="mass1Display">5</span> kg
+        <br>
+        <label for="mass2">Masa del objeto colgante (kg):</label>
+        <input type="range" id="mass2" min="1" max="10" step="0.1" value="5">
+        <span id="mass2Display">5</span> kg
+        <br>
+        <label for="friction">Coeficiente de rozamiento:</label>
+        <input type="range" id="friction" min="0" max="1" step="0.01" value="0.1">
+        <span id="frictionDisplay">0.1</span>
+        <br>
+        <button id="startButton">Iniciar</button>
+        <button id="stopButton">Detener</button>
+        <button id="resetButton">Reiniciar</button>
+        <br>
+        <input type="checkbox" id="showForces">
+        <label for="showForces">Mostrar fuerzas y aceleración</label>
+    </div>
+
+    <div class="questions">
+        <p>Pregunta 1: ¿Qué ocurre con la tensión si se aumenta la masa del objeto que cuelga?</p>
+        <input type="radio" name="q1" value="a"> a) Aumenta<br>
+        <input type="radio" name="q1" value="b"> b) Disminuye<br>
+        <input type="radio" name="q1" value="c"> c) Permanece igual<br>
+
+        <p>Pregunta 2: Si el coeficiente de rozamiento aumenta, ¿qué ocurre con la tensión?</p>
+        <input type="radio" name="q2" value="a"> a) Aumenta<br>
+        <input type="radio" name="q2" value="b"> b) Disminuye<br>
+        <input type="radio" name="q2" value="c"> c) Permanece igual<br>
+
+        <p>Pregunta 3: ¿Y con la aceleración?</p>
+        <input type="radio" name="q3" value="a"> a) Aumenta<br>
+        <input type="radio" name="q3" value="b"> b) Disminuye<br>
+        <input type="radio" name="q3" value="c"> c) Permanece igual<br>
+
+        <p>Pregunta 4: Si se fija el coeficiente de rozamiento, ¿cualquier valor de la masa del objeto que cuelga provoca aceleración?</p>
+        <input type="radio" name="q4" value="a"> a) Sí<br>
+        <input type="radio" name="q4" value="b"> b) No<br>
+        
+        <button id="submitAnswers">Enviar respuestas</button>
+    </div>
+
+    <p id="results"></p>
+
+    <script>
+        const canvas = document.getElementById('canvas');
+        const ctx = canvas.getContext('2d');
+        const mass1Slider = document.getElementById('mass1');
+        const mass2Slider = document.getElementById('mass2');
+        const frictionSlider = document.getElementById('friction');
+        const mass1Display = document.getElementById('mass1Display');
+        const mass2Display = document.getElementById('mass2Display');
+        const frictionDisplay = document.getElementById('frictionDisplay');
+        const startButton = document.getElementById('startButton');
+        const stopButton = document.getElementById('stopButton');
+        const resetButton = document.getElementById('resetButton');
+        const showForcesCheckbox = document.getElementById('showForces');
+        const submitAnswersButton = document.getElementById('submitAnswers');
+        const results = document.getElementById('results');
+
+        let animationId;
+        let running = false;
+        let mass1 = parseFloat(mass1Slider.value);
+        let mass2 = parseFloat(mass2Slider.value);
+        let friction = parseFloat(frictionSlider.value);
+        let acceleration = 0;
+        let tension = 0;
+
+        function updateValues() {
+            mass1 = parseFloat(mass1Slider.value);
+            mass2 = parseFloat(mass2Slider.value);
+            friction = parseFloat(frictionSlider.value);
+            mass1Display.textContent = mass1;
+            mass2Display.textContent = mass2;
+            frictionDisplay.textContent = friction;
+        }
+
+        function calculateForces() {
+            const g = 9.8; // gravedad
+            const f_gravity2 = mass2 * g;
+            const f_friction = friction * mass1 * g;
+            const f_net = f_gravity2 - f_friction;
+            if (f_net > 0) {
+                acceleration = f_net / (mass1 + mass2);
+                tension = mass1 * (g - acceleration);
+            } else {
+                acceleration = 0;
+                tension = f_gravity2;
+            }
+        }
+
+        function draw() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+            // Mesa
+            ctx.fillRect(50, 150, 700, 10);
+
+            // Masa 1
+            ctx.fillRect(100, 100, 50, 50);
+
+            // Polea
+            ctx.beginPath();
+            ctx.arc(400, 100, 20, 0, 2 * Math.PI);
+            ctx.stroke();
+
+            // Cuerda
+            ctx.beginPath();
+            ctx.moveTo(125, 100);
+            ctx.lineTo(400, 100);
+            ctx.lineTo(400, 200);
+            ctx.stroke();
+
+            // Masa 2
+            ctx.fillRect(375, 200, 50, 50);
+
+            if (showForcesCheckbox.checked) {
+                ctx.fillStyle = 'red';
+                ctx.fillText(`Tensión: ${tension.toFixed(2)} N`, 150, 50);
+                ctx.fillText(`Aceleración: ${acceleration.toFixed(2)} m/s²`, 150, 70);
+                ctx.fillStyle = 'black';
+            }
+        }
+
+        function animate() {
+            if (!running) return;
+
+            calculateForces();
+            draw();
+
+            animationId = requestAnimationFrame(animate);
+        }
+
+        startButton.addEventListener('click', () => {
+            if (!running) {
+                running = true;
+                animate();
+            }
+        });
+
+        stopButton.addEventListener('click', () => {
+            running = false;
+            cancelAnimationFrame(animationId);
+        });
+
+        resetButton.addEventListener('click', () => {
+            running = false;
+            cancelAnimationFrame(animationId);
+            mass1Slider.value = 5;
+            mass2Slider.value = 5;
+            frictionSlider.value = 0.1;
+            updateValues();
+            draw();
+        });
+
+        mass1Slider.addEventListener('input', updateValues);
+        mass2Slider.addEventListener('input', updateValues);
+        frictionSlider.addEventListener('input', updateValues);
+
+        submitAnswersButton.addEventListener('click', () => {
+            let correctAnswers = 0;
+            if (document.querySelector('input[name="q1"]:checked').value === 'a') correctAnswers++;
+            if (document.querySelector('input[name="q2"]:checked').value === 'b') correctAnswers++;
+            if (document.querySelector('input[name="q3"]:checked').value === 'b') correctAnswers++;
+            if (document.querySelector('input[name="q4"]:checked').value === 'b') correctAnswers++;
+
+            results.textContent = `Preguntas acertadas: ${correctAnswers} de 4`;
+        });
+
+        updateValues();
+        draw();
+    </script>
+</body>
+</html>
