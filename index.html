@@ -18,7 +18,7 @@
 <body>
     <h1>Problema de dinámica (I)</h1>
     <p>Autor: Antonio González García</p>
-    <canvas id="canvas" width="800" height="400"></canvas>
+    <canvas id="canvas" width="1000" height="700"></canvas>
     <div class="controls">
         <label for="mass1">Masa del objeto sobre la mesa (kg):</label>
         <input type="range" id="mass1" min="1" max="10" step="0.1" value="5">
@@ -89,7 +89,7 @@
         let acceleration = 0;
         let tension = 0;
         let x1 = 100; // Initial position of mass1
-        let y2 = 200; // Initial position of mass2
+        let y2 = 350; // Initial position of mass2
         let velocity = 0; // Initial velocity
 
         function updateValues() {
@@ -119,25 +119,27 @@
             ctx.clearRect(0, 0, canvas.width, canvas.height);
 
             // Mesa
-            ctx.fillRect(50, 150, 700, 10);
+            ctx.fillStyle = 'gray';
+            ctx.fillRect(50, 300, 900, 10);
 
             // Masa 1
-            ctx.fillRect(x1, 100, 50, 50);
+            ctx.fillStyle = 'black';
+            ctx.fillRect(x1, 250, 50, 50);
 
             // Polea
             ctx.beginPath();
-            ctx.arc(400, 100, 20, 0, 2 * Math.PI);
+            ctx.arc(950, 305, 20, 0, 2 * Math.PI);
             ctx.stroke();
 
             // Cuerda
             ctx.beginPath();
-            ctx.moveTo(x1 + 25, 100);
-            ctx.lineTo(400, 100);
-            ctx.lineTo(400, y2);
+            ctx.moveTo(x1 + 50, 275);
+            ctx.lineTo(950, 275);
+            ctx.lineTo(970, y2);
             ctx.stroke();
 
             // Masa 2
-            ctx.fillRect(375, y2, 50, 50);
+            ctx.fillRect(945, y2, 50, 50);
 
             if (showForcesCheckbox.checked) {
                 ctx.fillStyle = 'red';
@@ -155,7 +157,7 @@
             x1 += velocity;
             y2 += velocity;
 
-            if (x1 >= 350) {
+            if (x1 >= 900 - 50) {
                 running = false;
             }
 
@@ -182,7 +184,7 @@
             mass2Slider.value = 5;
             frictionSlider.value = 0.1;
             x1 = 100;
-            y2 = 200;
+            y2 = 350;
             velocity = 0;
             updateValues();
             draw();
