@@ -18,7 +18,7 @@
 <body>
     <h1>Problema de dinámica (I)</h1>
     <p>Autor: Antonio González García</p>
-    <canvas id="canvas" width="1100" height="700"></canvas>
+    <canvas id="canvas" width="1150" height="700"></canvas>
     <div class="controls">
         <label for="mass1">Masa del objeto sobre la mesa (kg):</label>
         <input type="range" id="mass1" min="1" max="10" step="0.1" value="5">
@@ -132,7 +132,7 @@
 
             // Mesa
             ctx.fillStyle = 'gray';
-            ctx.fillRect(50, 300, 1000, 10);
+            ctx.fillRect(50, 300, 1050, 10);
 
             // Tamaño de las masas
             const size1 = 40 + mass1 * 3; // Variación de tamaño
@@ -144,23 +144,23 @@
 
             // Polea
             ctx.beginPath();
-            ctx.arc(1050, 300, poleaRadius, 0, 2 * Math.PI);
+            ctx.arc(1100, 300, poleaRadius, 0, 2 * Math.PI);
             ctx.stroke();
 
             // Cuerda
             ctx.beginPath();
             ctx.moveTo(x1 + size1, 280); // Punto fijo de unión a la masa azul
-            ctx.lineTo(1050, 280); // Punto de tangencia con la polea más alto (ángulo 90º)
+            ctx.lineTo(1100, 280); // Punto de tangencia con la polea más alto (ángulo 90º)
             ctx.stroke();
 
             ctx.beginPath();
-            ctx.moveTo(1050, 300); // Punto de tangencia con la polea más a la derecha (ángulo 0º)
-            ctx.lineTo(1070, y2 + size2 / 2); // Punto medio del lado más alto de masa 2
+            ctx.moveTo(1100 + poleaRadius, 300); // Punto de tangencia con la polea más a la derecha (ángulo 0º)
+            ctx.lineTo(1100 + poleaRadius, y2 + size2 / 2); // Punto medio del lado más alto de masa 2
             ctx.stroke();
 
             // Masa 2
             ctx.fillStyle = 'red';
-            ctx.fillRect(1045, y2, size2, size2);
+            ctx.fillRect(1095, y2, size2, size2);
 
             if (showForcesCheckbox.checked) {
                 ctx.fillStyle = 'red';
@@ -181,7 +181,7 @@
             y2 += velocity * timeStep * (slowMotionCheckbox.checked ? 0.1 : 1);
             time += timeStep * (slowMotionCheckbox.checked ? 0.1 : 1);
 
-            if (x1 >= 1000 - (40 + mass1 * 3)) { // Ajuste de tamaño en la posición final
+            if (x1 >= 1050 - (40 + mass1 * 3)) { // Ajuste de tamaño en la posición final
                 running = false;
             }
 
