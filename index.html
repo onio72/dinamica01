@@ -13,6 +13,12 @@
         .questions {
             margin: 20px 0;
         }
+        .vector-label {
+            font-family: Arial, sans-serif;
+            font-size: 14px;
+            font-weight: bold;
+            color: black;
+        }
     </style>
 </head>
 <body>
@@ -132,16 +138,22 @@
             }
         }
 
-        function drawVector(x, y, fx, fy, color) {
+        function drawVector(x, y, fx, fy, color, label) {
             const magnitude = Math.sqrt(fx * fx + fy * fy);
             const scale = 30 / magnitude; // Escala para ajustar el tamaño de los vectores
+            const endX = x + fx * scale;
+            const endY = y - fy * scale;
+
             ctx.beginPath();
             ctx.moveTo(x, y);
-            ctx.lineTo(x + fx * scale, y - fy * scale);
+            ctx.lineTo(endX, endY);
             ctx.strokeStyle = color;
             ctx.lineWidth = 2;
             ctx.stroke();
-            ctx.lineWidth = 1;
+
+            ctx.fillStyle = color;
+            ctx.font = '14px Arial';
+            ctx.fillText(label, endX, endY);
         }
 
         function drawForces() {
@@ -152,15 +164,15 @@
 
             // Fuerzas sobre el objeto azul
             if (showAllForcesCheckbox.checked) {
-                drawVector(x1 + (40 + mass1 * 3) / 2, 300 - (40 + mass1 * 3) / 2, tension, 0, 'black'); // Tensión
-                drawVector(x1 + (40 + mass1 * 3) / 2, 300 - (40 + mass1 * 3) / 2, -f_friction, 0, 'black'); // Fricción
-                drawVector(x1 + (40 + mass1 * 3) / 2, 300 - (40 + mass1 * 3) / 2, 0, -f_gravity1, 'black'); // Peso
-                drawVector(x1 + (40 + mass1 * 3) / 2, 300 - (40 + mass1 * 3) / 2, 0, f_gravity1, 'black'); // Normal
+                drawVector(x1 + (40 + mass1 * 3) / 2, 300 - (40 + mass1 * 3) / 2, tension, 0, 'black', '→T'); // Tensión
+                drawVector(x1 + (40 + mass1 * 3) / 2, 300 - (40 + mass1 * 3) / 2, -f_friction, 0, 'black', '←Fr'); // Fricción
+                drawVector(x1 + (40 + mass1 * 3) / 2, 300 - (40 + mass1 * 3) / 2, 0, -f_gravity1, 'black', '↓p'); // Peso
+                drawVector(x1 + (40 + mass1 * 3) / 2, 300 - (40 + mass1 * 3) / 2, 0, f_gravity1, 'black', '↑N'); // Normal
             }
 
             // Fuerzas sobre el objeto rojo
-            drawVector(1100 + poleaRadius, y2 + (40 + mass2 * 3) / 2, 0, tension, 'black'); // Tensión
-            drawVector(1100 + poleaRadius, y2 + (40 + mass2 * 3) / 2, 0, -f_gravity2, 'black'); // Peso
+            drawVector(1100 + poleaRadius, y2 + (40 + mass2 * 3) / 2, 0, tension, 'black', '↑T'); // Tensión
+            drawVector(1100 + poleaRadius, y2 + (40 + mass2 * 3) / 2, 0, -f_gravity2, 'black', '↓p'); // Peso
         }
 
         function draw() {
