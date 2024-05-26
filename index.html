@@ -39,6 +39,9 @@
         <input type="checkbox" id="showForces">
         <label for="showForces">Mostrar fuerzas y aceleración</label>
         <br>
+        <input type="checkbox" id="showAllForces">
+        <label for="showAllForces">Mostrar todas las fuerzas</label>
+        <br>
         <input type="checkbox" id="slowMotion">
         <label for="slowMotion">Ralentizar movimiento</label>
         <br>
@@ -84,6 +87,7 @@
         const stopButton = document.getElementById('stopButton');
         const resetButton = document.getElementById('resetButton');
         const showForcesCheckbox = document.getElementById('showForces');
+        const showAllForcesCheckbox = document.getElementById('showAllForces');
         const slowMotionCheckbox = document.getElementById('slowMotion');
         const timeDisplay = document.getElementById('timeDisplay');
         const submitAnswersButton = document.getElementById('submitAnswers');
@@ -115,8 +119,9 @@
 
         function calculateForces() {
             const g = 9.8; // gravedad
+            const f_gravity1 = mass1 * g;
             const f_gravity2 = mass2 * g;
-            const f_friction = friction * mass1 * g;
+            const f_friction = friction * f_gravity1;
             const f_net = f_gravity2 - f_friction;
             if (f_net > 0) {
                 acceleration = f_net / (mass1 + mass2);
@@ -125,6 +130,37 @@
                 acceleration = 0;
                 tension = f_gravity2;
             }
+        }
+
+        function drawVector(x, y, fx, fy, color) {
+            const magnitude = Math.sqrt(fx * fx + fy * fy);
+            const scale = 30 / magnitude; // Escala para ajustar el tamaño de los vectores
+            ctx.beginPath();
+            ctx.moveTo(x, y);
+            ctx.lineTo(x + fx * scale, y - fy * scale);
+            ctx.strokeStyle = color;
+            ctx.lineWidth = 2;
+            ctx.stroke();
+            ctx.lineWidth = 1;
+        }
+
+        function drawForces() {
+            const g = 9.8;
+            const f_gravity1 = mass1 * g;
+            const f_gravity2 = mass2 * g;
+            const f_friction = friction * f_gravity1;
+
+            // Fuerzas sobre el objeto azul
+            if (showAllForcesCheckbox.checked) {
+                drawVector(x1 + (40 + mass1 * 3) / 2, 300 - (40 + mass1 * 3) / 2, tension, 0, 'black'); // Tensión
+                drawVector(x1 + (40 + mass1 * 3) / 2, 300 - (40 + mass1 * 3) / 2, -f_friction, 0, 'black'); // Fricción
+                drawVector(x1 + (40 + mass1 * 3) / 2, 300 - (40 + mass1 * 3) / 2, 0, -f_gravity1, 'black'); // Peso
+                drawVector(x1 + (40 + mass1 * 3) / 2, 300 - (40 + mass1 * 3) / 2, 0, f_gravity1, 'black'); // Normal
+            }
+
+            // Fuerzas sobre el objeto rojo
+            drawVector(1100 + poleaRadius, y2 + (40 + mass2 * 3) / 2, 0, tension, 'black'); // Tensión
+            drawVector(1100 + poleaRadius, y2 + (40 + mass2 * 3) / 2, 0, -f_gravity2, 'black'); // Peso
         }
 
         function draw() {
@@ -163,13 +199,16 @@
             ctx.fillRect(1095, y2, size2, size2);
 
             if (showForcesCheckbox.checked) {
-                ctx.fillStyle = 'red';
+                ctx.fillStyle = 'black';
+                ctx.font = '16px Arial';
                 ctx.fillText(`Tensión: ${tension.toFixed(2)} N`, 150, 50);
                 ctx.fillText(`Aceleración: ${acceleration.toFixed(2)} m/s²`, 150, 70);
-                ctx.fillStyle = 'black';
+                ctx.fillText(`Tiempo: ${time.toFixed(2)} s`, 150, 90);
             }
 
-            timeDisplay.value = time.toFixed(2) + ' s';
+            if (showAllForcesCheckbox.checked) {
+                drawForces();
+            }
         }
 
         function animate() {
