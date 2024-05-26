@@ -140,7 +140,7 @@
 
             // Masa 1
             ctx.fillStyle = 'blue';
-            ctx.fillRect(x1, 300 - size1 / 2, size1, size1);
+            ctx.fillRect(x1, 300 - size1, size1, size1); // Adjusted position to be on the table
 
             // Polea
             ctx.beginPath();
@@ -149,7 +149,7 @@
 
             // Cuerda
             ctx.beginPath();
-            ctx.moveTo(x1 + size1, 300); // Punto medio del lado derecho de masa 1
+            ctx.moveTo(x1 + size1, 300 - size1 / 2); // Punto medio del lado derecho de masa 1
             ctx.lineTo(950, 280); // Punto de tangencia con la polea
             ctx.lineTo(970, y2 + size2 / 2); // Punto medio del lado más alto de masa 2
             ctx.stroke();
