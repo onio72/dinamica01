@@ -38,6 +38,12 @@
         <br>
         <input type="checkbox" id="showForces">
         <label for="showForces">Mostrar fuerzas y aceleración</label>
+        <br>
+        <input type="checkbox" id="slowMotion">
+        <label for="slowMotion">Ralentizar movimiento</label>
+        <br>
+        <label for="timeDisplay">Tiempo:</label>
+        <input type="text" id="timeDisplay" readonly>
     </div>
 
     <div class="questions">
@@ -78,6 +84,8 @@
         const stopButton = document.getElementById('stopButton');
         const resetButton = document.getElementById('resetButton');
         const showForcesCheckbox = document.getElementById('showForces');
+        const slowMotionCheckbox = document.getElementById('slowMotion');
+        const timeDisplay = document.getElementById('timeDisplay');
         const submitAnswersButton = document.getElementById('submitAnswers');
         const results = document.getElementById('results');
 
@@ -91,6 +99,8 @@
         let x1 = 100; // Initial position of mass1
         let y2 = 350; // Initial position of mass2
         let velocity = 0; // Initial velocity
+        let time = 0; // Initial time
+        let timeStep = 0.02; // Time step for the animation
 
         function updateValues() {
             mass1 = parseFloat(mass1Slider.value);
@@ -123,8 +133,9 @@
             ctx.fillRect(50, 300, 900, 10);
 
             // Masa 1
-            ctx.fillStyle = 'black';
-            ctx.fillRect(x1, 250, 50, 50);
+            const size1 = mass1 * 10;
+            ctx.fillStyle = 'blue';
+            ctx.fillRect(x1, 300 - size1 / 2, size1, size1);
 
             // Polea
             ctx.beginPath();
@@ -133,13 +144,15 @@
 
             // Cuerda
             ctx.beginPath();
-            ctx.moveTo(x1 + 50, 275);
-            ctx.lineTo(950, 275);
-            ctx.lineTo(970, y2);
+            ctx.moveTo(x1 + size1, 300);
+            ctx.lineTo(950, 280); // Horizontal part of the rope
+            ctx.lineTo(970, y2); // Vertical part of the rope
             ctx.stroke();
 
             // Masa 2
-            ctx.fillRect(945, y2, 50, 50);
+            const size2 = mass2 * 10;
+            ctx.fillStyle = 'red';
+            ctx.fillRect(945, y2, size2, size2);
 
             if (showForcesCheckbox.checked) {
                 ctx.fillStyle = 'red';
@@ -147,17 +160,20 @@
                 ctx.fillText(`Aceleración: ${acceleration.toFixed(2)} m/s²`, 150, 70);
                 ctx.fillStyle = 'black';
             }
+
+            timeDisplay.value = time.toFixed(2) + ' s';
         }
 
         function animate() {
             if (!running) return;
 
             calculateForces();
-            velocity += acceleration;
-            x1 += velocity;
-            y2 += velocity;
+            velocity += acceleration * timeStep;
+            x1 += velocity * timeStep * (slowMotionCheckbox.checked ? 0.1 : 1);
+            y2 += velocity * timeStep * (slowMotionCheckbox.checked ? 0.1 : 1);
+            time += timeStep * (slowMotionCheckbox.checked ? 0.1 : 1);
 
-            if (x1 >= 900 - 50) {
+            if (x1 >= 900 - mass1 * 10) {
                 running = false;
             }
 
@@ -186,6 +202,7 @@
             x1 = 100;
             y2 = 350;
             velocity = 0;
+            time = 0;
             updateValues();
             draw();
         });
