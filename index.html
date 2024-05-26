@@ -101,6 +101,7 @@
         let velocity = 0; // Initial velocity
         let time = 0; // Initial time
         let timeStep = 0.02; // Time step for the animation
+        const poleaRadius = 20; // Radio de la polea
 
         function updateValues() {
             mass1 = parseFloat(mass1Slider.value);
@@ -109,6 +110,7 @@
             mass1Display.textContent = mass1;
             mass2Display.textContent = mass2;
             frictionDisplay.textContent = friction;
+            draw(); // Redraw with updated sizes
         }
 
         function calculateForces() {
@@ -132,25 +134,27 @@
             ctx.fillStyle = 'gray';
             ctx.fillRect(50, 300, 900, 10);
 
+            // Tamaño de las masas
+            const size1 = 40 + mass1 * 3; // Variación de tamaño
+            const size2 = 40 + mass2 * 3; // Variación de tamaño
+
             // Masa 1
-            const size1 = mass1 * 10;
             ctx.fillStyle = 'blue';
             ctx.fillRect(x1, 300 - size1 / 2, size1, size1);
 
             // Polea
             ctx.beginPath();
-            ctx.arc(950, 305, 20, 0, 2 * Math.PI);
+            ctx.arc(950, 300, poleaRadius, 0, 2 * Math.PI);
             ctx.stroke();
 
             // Cuerda
             ctx.beginPath();
-            ctx.moveTo(x1 + size1, 300);
-            ctx.lineTo(950, 280); // Horizontal part of the rope
-            ctx.lineTo(970, y2); // Vertical part of the rope
+            ctx.moveTo(x1 + size1, 300); // Punto medio del lado derecho de masa 1
+            ctx.lineTo(950, 280); // Punto de tangencia con la polea
+            ctx.lineTo(970, y2 + size2 / 2); // Punto medio del lado más alto de masa 2
             ctx.stroke();
 
             // Masa 2
-            const size2 = mass2 * 10;
             ctx.fillStyle = 'red';
             ctx.fillRect(945, y2, size2, size2);
 
@@ -173,7 +177,7 @@
             y2 += velocity * timeStep * (slowMotionCheckbox.checked ? 0.1 : 1);
             time += timeStep * (slowMotionCheckbox.checked ? 0.1 : 1);
 
-            if (x1 >= 900 - mass1 * 10) {
+            if (x1 >= 900 - (40 + mass1 * 3)) { // Ajuste de tamaño en la posición final
                 running = false;
             }
 
@@ -204,7 +208,6 @@
             velocity = 0;
             time = 0;
             updateValues();
-            draw();
         });
 
         mass1Slider.addEventListener('input', updateValues);
